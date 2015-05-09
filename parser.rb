@@ -8,9 +8,21 @@ Dir.glob('1031/*.html').each do |filename|
 	document = Nokogiri::HTML(File.read(filename))
 
 	table =  document.css('html table#ctl00_ContentPlaceHolder1_Course_GridView tr.GridView_AlternatingRow').each do |row|
-
 		datas = row.css('td')
-		#count = 10
+
+    time = datas[7] && datas[7].text.strip
+    periods = []
+    m = time && time.match(/(?<d>\d)\-(?<p>.+)\/(?<loc>.+)/)
+    if !!m
+      m[:p].split("").each do |period|
+        chars = []
+        chars << m[:d]
+        chars << period
+        chars << m[:loc]
+        periods << chars.join(',')
+      end
+    end
+
 		courses << {
 			serial_No: datas[0] && datas[0].text.strip,
 			curriculum_No: datas[1] && datas[1].text.strip,
@@ -20,7 +32,7 @@ Dir.glob('1031/*.html').each do |filename|
 			team: datas[4] && datas[4].text.strip,
 			required: datas[5] && datas[5].text.strip.gsub(/\s+/, ' '),
 			credit: datas[6] && datas[6].text.strip,
-			schedule: datas[7] && datas[7].text.strip,
+			periods: periods,
 			lecturer: datas[8] && datas[8].text.strip,
 			class_member: datas[9] && datas[9].text.strip,
 			note: datas[11] && datas[11].text.strip.gsub(/\s+/, ' '),
