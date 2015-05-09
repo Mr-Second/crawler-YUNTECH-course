@@ -4,13 +4,10 @@ require 'json'
 require 'rest-client'
 
 courses = []
-(2..121).each do |page_number|
+Dir.glob('1031/*.html').each do |filename|
+	document = Nokogiri::HTML(File.read(filename))
 
-	string = File.read("1031/#{page_number}.html")
-
-	document = Nokogiri::HTML(string.to_s)
-
-	table =  document.css('html table#ctl00_ContentPlaceHolder1_Course_GridView tr:nth-child(n+2)').each do |row|
+	table =  document.css('html table#ctl00_ContentPlaceHolder1_Course_GridView tr.GridView_AlternatingRow').each do |row|
 
 		datas = row.css('td')
 		#count = 10
