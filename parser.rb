@@ -11,7 +11,7 @@ courses = []
 	document = Nokogiri::HTML(string.to_s)
 
 	table =  document.css('html table#ctl00_ContentPlaceHolder1_Course_GridView tr:nth-child(n+2)').each do |row|
-		
+
 		datas = row.css('td')
 		#count = 10
 		courses << {
