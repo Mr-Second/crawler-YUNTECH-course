@@ -13,8 +13,8 @@ class Crawler
     visit "https://webapp.yuntech.edu.tw/WebNewCAS/Course/QueryCour.aspx?lang=zh-TW"
     first('option[value="1031"]').select_option
     click_on '執行查詢'
-    # page_count = 1
-    (1..121).each do |page_count|
+    total_page = find('#ctl00_ContentPlaceHolder1_PageControl1_TotalPage').text.to_i
+    (1..total_page).each do |page_count|
       find("select[name=\"ctl00$ContentPlaceHolder1$PageControl1$Pages\"] option[value=\"#{page_count}\"]").select_option
       # sleep longer if crawl error
       sleep 2
