@@ -1,5 +1,6 @@
 雲科大課程爬蟲
 =============
 
-把 crawler 的 option 從 1031 改成 1041 就可以爬這學期的課。
-crawler 在抓資料時，最後一頁會抓不到『可以從 page_number 修改試試看』。
+用 RestClient 似乎太難弄了，網站會 payload 奇妙東西，不是 form 那麼輕鬆，就用 Capybara 弄就好了。
+
+單 Thread 跑大約八分鐘。

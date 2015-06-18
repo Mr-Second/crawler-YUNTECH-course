@@ -1,11 +1,9 @@
-require 'crawler_rocks'
 require 'capybara'
 require 'capybara/poltergeist'
 require 'json'
 require 'pry'
 
 class YuntechCourseCrawler
-  include CrawlerRocks::DSL
   include Capybara::DSL
 
   PERIODS = {
