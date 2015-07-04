@@ -1,7 +1,13 @@
 require 'capybara'
 require 'capybara/poltergeist'
+
 require 'json'
 require 'pry'
+
+require 'thread'
+require 'thwait'
+
+require 'crawler_rocks'
 
 class YuntechCourseCrawler
   include Capybara::DSL
@@ -52,7 +58,9 @@ class YuntechCourseCrawler
     @courses = []
     visit @query_url
 
-    first("select[name=\"ctl00$ContentPlaceHolder1$AcadSeme\"] option[value=\"#{@year-1911}#{@term}\"]").select_option
+    year_term = "#{@year-1911}#{@term}"
+
+    first("select[name=\"ctl00$ContentPlaceHolder1$AcadSeme\"] option[value=\"#{year_term}\"]").select_option
 
     coll_selector = 'select[name="ctl00$ContentPlaceHolder1$College"] option:not(:first-child)'
     dept_selector = 'select[name="ctl00$ContentPlaceHolder1$DeptCode"] option:not(:first-child)'
@@ -62,7 +70,7 @@ class YuntechCourseCrawler
     (0...coll_count).each do |coll_index|
       visit @query_url
 
-      first("select[name=\"ctl00$ContentPlaceHolder1$AcadSeme\"] option[value=\"#{@year-1911}#{@term}\"]").select_option
+      first("select[name=\"ctl00$ContentPlaceHolder1$AcadSeme\"] option[value=\"#{year_term}\"]").select_option
 
       college_opt = all(coll_selector)[coll_index]
       college = college_opt.text
@@ -73,7 +81,7 @@ class YuntechCourseCrawler
 
       (0...dept_count).each do |dept_index|
         visit @query_url
-        first("select[name=\"ctl00$ContentPlaceHolder1$AcadSeme\"] option[value=\"#{@year-1911}#{@term}\"]").select_option
+        first("select[name=\"ctl00$ContentPlaceHolder1$AcadSeme\"] option[value=\"#{year_term}\"]").select_option
 
         all(coll_selector)[coll_index].select_option
 
@@ -99,6 +107,20 @@ class YuntechCourseCrawler
         puts
       end # all dept option do
     end # all college option do
+
+    page.driver.quit
+
+    @threads = []
+    @courses.each do |course|
+      sleep(1) until (
+        @threads.delete_if { |t| !t.status };  # remove dead (ended) threads
+        @threads.count < ( (ENV['MAX_THREADS'] && ENV['MAX_THREADS'].to_i) || 30)
+      )
+      @threads << Thread.new {
+        @after_each_proc.call(course: course) if @after_each_proc
+      }
+    end
+    ThreadsWait.all_waits(*@threads)
 
     @courses
   end # end courses method
@@ -137,6 +159,7 @@ class YuntechCourseCrawler
         year: @year,
         term: @term,
         code: code,
+        general_code: curriculum_no,
         department: dept_n,
         department_code: dept_c,
         name: datas[2] && datas[2].text.strip.gsub(/\s+/, ' '),
@@ -189,5 +212,5 @@ class YuntechCourseCrawler
 
 end
 
-cc = YuntechCourseCrawler.new(year: 2014, term: 1)
-File.write('courses.json', JSON.pretty_generate(cc.courses))
+# cc = YuntechCourseCrawler.new(year: 2014, term: 1)
+# File.write('1031_yuntech_courses.json', JSON.pretty_generate(cc.courses))
