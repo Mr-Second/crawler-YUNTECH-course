@@ -13,22 +13,22 @@ class YuntechCourseCrawler
   include Capybara::DSL
 
   PERIODS = {
-    "W" => 0,
-    "X" => 1,
-    "A" => 2,
-    "B" => 3,
-    "C" => 4,
-    "D" => 5,
-    "Y" => 6,
-    "E" => 7,
-    "F" => 8,
-    "G" => 9,
-    "H" => 10,
-    "Z" => 11,
-    "I" => 12,
-    "J" => 13,
-    "K" => 14,
-    "L" => 15,
+    "W" => 1,
+    "X" => 2,
+    "A" => 3,
+    "B" => 4,
+    "C" => 5,
+    "D" => 6,
+    "Y" => 7,
+    "E" => 8,
+    "F" => 9,
+    "G" => 10,
+    "H" => 11,
+    "Z" => 12,
+    "I" => 13,
+    "J" => 14,
+    "K" => 15,
+    "L" => 16,
   }
 
   def initialize year: current_year, term: current_term, update_progress: nil, after_each: nil, params: nil
